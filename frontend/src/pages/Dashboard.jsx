@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import API from "../services/api";
 
 function Dashboard() {
@@ -9,6 +10,13 @@ function Dashboard() {
   const [content, setContent] = useState("");
 
   const token = localStorage.getItem("token");
+
+  const navigate = useNavigate();
+
+  const logout = () => {
+    localStorage.removeItem("token");
+    navigate("/login");
+  };
 
   const searchNotes = async () => {
 
@@ -77,10 +85,17 @@ function Dashboard() {
   return (
 
     <div className="p-8">
-
-      <h1 className="text-3xl font-bold mb-6">
-        My Notes
-      </h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold mb-6">
+            My Notes
+        </h1>
+        <button
+            onClick={logout}
+            className="bg-blue-600 text-white px-4 py-2 rounded"
+        >
+            Logout
+        </button>
+      </div>
       <div className="mb-6">
 
         <input
@@ -124,7 +139,7 @@ function Dashboard() {
 
       </form>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-6">
 
         {notes.length === 0 ? (
           <p>No notes found</p>
@@ -132,7 +147,7 @@ function Dashboard() {
           notes.map((note)=>(
           <div
             key={note._id}
-            className="border p-4 bg-white shadow"
+            className="border p-4 rounded-lg bg-white shadow-md hover:shadow-lg"
           >
 
             <h2 className="font-bold">
