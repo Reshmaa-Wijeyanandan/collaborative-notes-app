@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill-new";
+import "react-quill-new/dist/quill.snow.css";
 import API from "../services/api";
 
 function Dashboard() {
@@ -121,19 +123,21 @@ function Dashboard() {
 
         <input
           placeholder="Title"
-          className="border p-2 mr-2"
+          className="border p-2 mr-2 mb-4 rounded"
           value={title}
           onChange={(e)=>setTitle(e.target.value)}
         />
 
-        <input
-          placeholder="Content"
-          className="border p-2 mr-2"
-          value={content}
-          onChange={(e)=>setContent(e.target.value)}
-        />
+        <div className="mb-4">
+          <ReactQuill
+            placeholder="Content"
+            value={content}
+            onChange={setContent}
+            className="bg-white"
+          />
+        </div>
 
-        <button className="bg-blue-600 text-white px-4 py-2">
+        <button className="bg-blue-600 text-white px-4 py-2 rounded mt-2">
           Add
         </button>
 
@@ -154,9 +158,9 @@ function Dashboard() {
               {note.title}
             </h2>
 
-            <p>
-              {note.content}
-            </p>
+            <div
+              dangerouslySetInnerHTML={{ __html: note.content }}
+            ></div>
 
             <button
               onClick={()=>deleteNote(note._id)}
