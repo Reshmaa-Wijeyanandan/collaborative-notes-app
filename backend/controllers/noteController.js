@@ -21,22 +21,25 @@ export const createNote = async (req, res) => {
 
 // GET ALL NOTES
 export const getNotes = async (req, res) => {
-
   try {
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
 
     const notes = await Note.find({
       $or: [
         { owner: req.user.id },
         { collaborators: req.user.id }
       ]
-    });
+    })
+    .skip((page - 1) * limit)
+    .limit(limit);
 
     res.json(notes);
 
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
-
 };
 
 
