@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import API from "../services/api";
 
 function Register() {
@@ -72,6 +73,13 @@ function Register() {
         <button className="bg-green-600 text-white w-full py-2">
           Register
         </button>
+
+        <p className="mt-4 text-center">
+          Already have an account?
+          <Link to="/login" className="text-green-600 ml-1">
+            Login
+          </Link>
+        </p>
 
       </form>
 
