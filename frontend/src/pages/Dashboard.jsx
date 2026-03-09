@@ -3,11 +3,29 @@ import API from "../services/api";
 
 function Dashboard() {
 
+  const [search, setSearch] = useState("");
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
   const token = localStorage.getItem("token");
+
+  const searchNotes = async () => {
+
+    if (!search) {
+        fetchNotes();
+        return;
+    }
+
+    const res = await API.get(`/notes/search?query=${search}`, {
+        headers: {
+        Authorization: `Bearer ${token}`
+        }
+    });
+
+    setNotes(res.data);
+
+  };
 
   const fetchNotes = async () => {
 
@@ -63,6 +81,23 @@ function Dashboard() {
       <h1 className="text-3xl font-bold mb-6">
         My Notes
       </h1>
+      <div className="mb-6">
+
+        <input
+            placeholder="Search notes..."
+            className="border p-2 mr-2"
+            value={search}
+            onChange={(e)=>setSearch(e.target.value)}
+        />
+
+        <button
+            onClick={searchNotes}
+            className="bg-green-600 text-white px-4 py-2"
+        >
+            Search
+        </button>
+
+      </div>
 
       <form
         onSubmit={createNote}
@@ -91,7 +126,10 @@ function Dashboard() {
 
       <div className="grid grid-cols-3 gap-4">
 
-        {notes.map((note)=>(
+        {notes.length === 0 ? (
+          <p>No notes found</p>
+        ) : (
+          notes.map((note)=>(
           <div
             key={note._id}
             className="border p-4 bg-white shadow"
@@ -113,7 +151,7 @@ function Dashboard() {
             </button>
 
           </div>
-        ))}
+        )))}
 
       </div>
 
