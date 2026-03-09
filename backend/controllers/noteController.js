@@ -1,4 +1,5 @@
 import Note from "../models/Note.js";
+import User from "../models/User.js";
 
 // CREATE NOTE
 export const createNote = async (req, res) => {
@@ -48,7 +49,13 @@ export const updateNote = async (req, res) => {
 
   try {
 
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findOne({
+      _id: req.params.id,
+      $or: [
+        { owner: req.user.id },
+        { collaborators: req.user.id }
+      ]
+    });
 
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
@@ -73,7 +80,10 @@ export const deleteNote = async (req, res) => {
 
   try {
 
-    const note = await Note.findById(req.params.id);
+    const note = await Note.findOne({
+      _id: req.params.id,
+      owner: req.user.id
+    });
 
     if (!note) {
       return res.status(404).json({ message: "Note not found" });
@@ -98,7 +108,15 @@ export const searchNotes = async (req, res) => {
     const { query } = req.query;
 
     const notes = await Note.find({
-      $text: { $search: query }
+      $and: [
+        { $text: { $search: query } },
+        {
+          $or: [
+            { owner: req.user.id },
+            { collaborators: req.user.id }
+          ]
+        }
+      ]
     });
 
     res.json(notes);
@@ -113,7 +131,15 @@ export const addCollaborator = async (req, res) => {
 
   try {
 
-    const { userId } = req.body;
+    const { email } = req.body;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const userId = user._id;
 
     const note = await Note.findById(req.params.id);
 
@@ -133,7 +159,9 @@ export const addCollaborator = async (req, res) => {
     });
 
   } catch (error) {
+
     res.status(500).json({ error: error.message });
+
   }
 
 };

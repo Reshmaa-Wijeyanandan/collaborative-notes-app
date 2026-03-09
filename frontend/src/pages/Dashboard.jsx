@@ -10,6 +10,8 @@ function Dashboard() {
   const [notes, setNotes] = useState([]);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [shareNoteId, setShareNoteId] = useState(null);
+  const [collaboratorEmail, setCollaboratorEmail] = useState("");
 
   const token = localStorage.getItem("token");
 
@@ -77,6 +79,33 @@ function Dashboard() {
     });
 
     fetchNotes();
+
+  };
+
+  const addCollaborator = async () => {
+
+    try {
+
+      await API.post(
+        `/notes/${shareNoteId}/collaborators`,
+        { email: collaboratorEmail },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
+
+      alert("Collaborator added");
+
+      setCollaboratorEmail("");
+      setShareNoteId(null);
+
+    } catch (err) {
+
+      alert("Failed to add collaborator");
+
+    }
 
   };
 
@@ -162,17 +191,69 @@ function Dashboard() {
               dangerouslySetInnerHTML={{ __html: note.content }}
             ></div>
 
-            <button
-              onClick={()=>deleteNote(note._id)}
-              className="text-red-500 mt-2"
-            >
-              Delete
-            </button>
+            <div className="flex gap-3 mt-3">
+
+              <button
+                onClick={()=>deleteNote(note._id)}
+                className="text-red-500"
+              >
+                Delete
+              </button>
+
+              <button
+                onClick={()=>setShareNoteId(note._id)}
+                className="text-blue-600"
+              >
+                Share
+              </button>
+
+            </div>
 
           </div>
         )))}
 
       </div>
+
+      {shareNoteId && (
+
+        <div className="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center">
+
+          <div className="bg-white p-6 rounded-lg shadow-lg w-96">
+
+            <h2 className="text-xl font-bold mb-4">
+              Share Note
+            </h2>
+
+            <input
+              placeholder="Enter collaborator email"
+              className="border p-2 w-full mb-4"
+              value={collaboratorEmail}
+              onChange={(e)=>setCollaboratorEmail(e.target.value)}
+            />
+
+            <div className="flex justify-end gap-3">
+
+              <button
+                onClick={()=>setShareNoteId(null)}
+                className="px-4 py-2 border"
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={addCollaborator}
+                className="bg-blue-600 text-white px-4 py-2"
+              >
+                Share
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      )}
 
     </div>
 
