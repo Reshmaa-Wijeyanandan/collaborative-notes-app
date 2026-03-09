@@ -1,7 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import API from "../services/api";
 
 function Login() {
+
+  const navigate = useNavigate();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -19,6 +23,8 @@ function Login() {
       localStorage.setItem("token", res.data.token);
 
       alert("Login successful");
+
+      navigate("/dashboard");
 
     } catch (error) {
       alert("Login failed");
@@ -61,9 +67,9 @@ function Login() {
 
         <p className="mt-4 text-center">
           Don't have an account?
-          <a href="/register" className="text-blue-600 ml-1">
+          <Link to="/register" className="text-blue-600 ml-1">
             Register
-          </a>
+          </Link>
         </p>
 
       </form>
