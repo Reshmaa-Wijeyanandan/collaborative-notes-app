@@ -4,7 +4,8 @@ createNote,
 getNotes,
 updateNote,
 deleteNote,
-searchNotes
+searchNotes,
+addCollaborator
 } from "../controllers/noteController.js";
 
 import protect from "../middleware/authMiddleware.js";
@@ -15,6 +16,7 @@ router.post("/", protect, createNote);
 router.get("/", protect, getNotes);
 router.put("/:id", protect, updateNote);
 router.delete("/:id", protect, deleteNote);
+router.post("/:id/collaborators", protect, addCollaborator);
 
 router.get("/search", protect, searchNotes);
 

@@ -105,3 +105,32 @@ export const searchNotes = async (req, res) => {
   }
 
 };
+
+export const addCollaborator = async (req, res) => {
+
+  try {
+
+    const { userId } = req.body;
+
+    const note = await Note.findById(req.params.id);
+
+    if (!note) {
+      return res.status(404).json({ message: "Note not found" });
+    }
+
+    if (!note.collaborators.includes(userId)) {
+      note.collaborators.push(userId);
+    }
+
+    await note.save();
+
+    res.json({
+      message: "Collaborator added",
+      note
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+
+};
